@@ -5,6 +5,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Entity\Global\**" />
+    <EmbeddedResource Remove="Entity\Global\**" />
+    <None Remove="Entity\Global\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="MongoDB.Driver" Version="2.10.0" />
   </ItemGroup>
 

@@ -30,10 +30,10 @@ namespace Meta.Desafio.Infraestructure
                 if (_connection == null)
                 {
                     // configura a conexão com o banco de dados
-                    MongoClient clienteConexao = new MongoClient(_configuration.GetConnectionString("ConexaoMongo"));
+                    MongoClient clientConnection = new MongoClient(_configuration.GetConnectionString("MongoConnection"));
 
                     // conecta o banco de dados da aplicação
-                    _connection = clienteConexao.GetDatabase("StoneDesafioDB");
+                    _connection = clientConnection.GetDatabase(_configuration.GetSection("DatabaseName").Value);
                 }
 
                 // retorna instância da conexão com o banco de dados

@@ -6,6 +6,5 @@ namespace Meta.Desafio.Infraestructure.Interface
     /// <summary>Interface de repositório exclusiva para a entidade de contato</summary>
     public interface IContactRepository : IRepository<Contact>
     {
-
     }
 }

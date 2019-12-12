@@ -13,13 +13,14 @@ using NSwag.Generation.Processors;
 
 namespace Meta.Desafio.WebApi
 {
+    /// <summary></summary>
     public class Startup
     {
         /// <summary>Configurações da aplicação</summary>
         public IConfiguration Configuration { get; }
 
         /// <summary>Construtor padrão da classe</summary>
-        /// <param name="configuracao">Conficurações da aplicação injetada por dependência</param>
+        /// <param name="configuration">Conficurações da aplicação injetada por dependência</param>
         public Startup(IConfiguration configuration)
         {
             // carrega as configuração por injeção de dependência

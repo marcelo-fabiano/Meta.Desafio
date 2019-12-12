@@ -1,76 +1,72 @@
 ﻿using Meta.Desafio.Application.Interface;
 using Meta.Desafio.Domain.Entity;
-using Meta.Desafio.Domain.Entity.Global;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System;
-using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Meta.Desafio.WebApi.Controllers
 {
     /// <summary>Classe do controller de contatos</summary>
     [Produces("application/json")]
     [Route("[controller]")]
-    public class ContactController : Controller
+    public class ContactController : ControllerBase
     {
         /// <summary>Interface de configuracao da aplicação</summary>
-        private readonly IConfiguration _configuracao;
+        private readonly IConfiguration _configuration;
 
         /// <summary>Variáveis de serviço utilizadas no controller</summary>
-        private readonly IContactService _servicoProduto;
+        private readonly IContactService _contactService;
 
         /// <summary>Construtor padrão da classe</summary>
-        public ContactController(IContactService servicoProduto, IConfiguration configuracao)
+        public ContactController(IContactService contactService, IConfiguration configuration)
         {
             // carrega as variáveis de serviço por injeção de dependência
-            _configuracao = configuracao;
-            _servicoProduto = servicoProduto;
+            _configuration = configuration;
+            _contactService = contactService;
         }
 
         /// <summary>Retorna um único objeto do tipo Contato</summary>
         /// <param name="idContato">Identificador único de objetos do tipo Contato</param>
         /// <example>api/get?idContato=[Identificador do contato]</example>
-        /// <returns>Retorna o <seealso cref="Result{TEntity}">Result</seealso> de lista de <seealso cref="Contact">Contatos</seealso> cadastrados no banco de dados</returns>
+        /// <returns>Retorna o <seealso cref="Contact">Contato</seealso> cadastrado no banco de dados com o identificador informado</returns>
         /// <response code="200">Requisição executada com sucesso</response>
         /// <response code="401">Requisição requer autenticação</response>
         /// <response code="404">Requisição não encontrada</response>
-        [HttpGet]
-        [Route("[action]/{idContato}")]
-        public Result<Contact> Get(string idContato)
+        [HttpGet("{idContato}")]
+        public async Task<IActionResult> Get(string idContato)
         {
-            return new Result<Contact> { ResultContent = new Contact() };
+            // carrega o resultado da busca pelo contato
+            var result = await _contactService.GetAsync(idContato);
+
+            // se foi encontrado um resultado, então retorna o registro encontrado
+            if (result != null) return Ok(result);
+              
+            // caso contrário retorna que o registro não pode ser encontrado
+            return NotFound();
         }
 
         /// <summary>Retorna uma lista de registros de acordo com o informado nos parâmetros: page e size. Se estes parâmetros não forem passados na consulta, os seguintes valores padrão serão utilizados: page = 0 e size = 10</summary>
         /// <param name="page">Página onde se encontra o subconjunto de registros desejado</param>
         /// <param name="size">Quantidade de registros a ser retornada em uma única página</param>
         /// <example>api/get</example>
-        /// <returns>Retorna o <seealso cref="Result{TEntity}">Result</seealso> de lista de <seealso cref="Contact">Contatos</seealso> cadastrados no banco de dados</returns>
+        /// <returns>Retorna a lista paginada de <seealso cref="Contact">Contatos</seealso> cadastrados no banco de dados</returns>
         /// <response code="200">Requisição executada com sucesso</response>
         /// <response code="401">Requisição requer autenticação</response>
         /// <response code="404">Requisição não encontrada</response>
-        [HttpGet]
-        [Route("[action]/{page?}/{size?}")]
-        public Result<IEnumerable<Contact>> Get(int page = 0, int size = 10)
+        [HttpGet("{page?}/{size?}")]
+        public async Task<IActionResult> Get([FromRoute] int page = 0, [FromRoute] int size = 10)
         {
-            // instancia resulatdo de execução
-            Result<IEnumerable<Contact>> result = new Result<IEnumerable<Contact>>();
+            // carrega o resultado da busca pela lista de contatos
+            var result = await _contactService.GetPagedListAsync(page, size);
 
-            try
-            {
-                // carrega informações de retorno
-                result.ResultContent = _servicoProduto.GetList();
-                result.Sucess = true;
-            }
-            catch (Exception ex)
-            {
-                // carrega informações de falha
-                result.Sucess = false;
-                result.ErrorList.Add(new ErrorInfo() { Message = ex.Message });
-            }
+            // se a lista possuir itens, então retorna o resultado encontrado
+            if (result?.Count() > 0) return Ok(result);
 
-            // retorna resultado da execução
-            return result;
+            // caso contrário retorna que a lista não pode ser encontrado
+            return NotFound();
         }
 
         /// <summary>Cria um novo objeto do tipo Contato</summary>
@@ -80,9 +76,32 @@ namespace Meta.Desafio.WebApi.Controllers
         /// <response code="400">Requisição não pode ser executada</response>
         /// <response code="401">Requisição requer autenticação</response>
         [HttpPost]
-        public void Post(Contact contact)
+        public async Task<IActionResult> Post([FromBody] Contact contact)
         {
-            //return new Result<Contact> { ResultContent = contact };
+            try
+            {
+                // se os dados de contato não foram preenchidos, retorna um badrequest(400)
+                if (contact == null) return BadRequest("Não foi informado o contato a ser inserido.");
+
+                // instancia o registro que será inserido no banco de dados
+                var registry = contact.ContactCreate(contact.nome, contact.canal, contact.valor, contact.obs);
+
+                // carrega o resultado da inserção do registro
+                var result = await _contactService.InsertRegistryAsync(registry);
+
+                // retorna o resultado da execução do método
+                return Created(nameof(ContactController), null);
+            }
+            catch(ValidationException ex) // se ocorreu erro de validação dos campos
+            {
+                // retorna o resultado da execução do método
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex) // se aconteceu erro de execução
+            {
+                // retorna o resultado da execução do método
+                return BadRequest(ex.Message);
+            }
         }
 
         /// <summary>Altera um objeto do tipo Contato</summary>
@@ -93,9 +112,41 @@ namespace Meta.Desafio.WebApi.Controllers
         /// <response code="401">Requisição requer autenticação</response>
         /// <response code="404">Requisição não encontrada</response>
         [HttpPut]
-        public void Put(Contact contact)
+        public async Task<IActionResult> Put([FromBody] Contact contact)
         {
+            try
+            {
+                // se os dados de contato não foram preenchidos, retorna um badrequest(400)
+                if (contact == null) return BadRequest("Não foi informado o contato a ser inserido.");
 
+                // carrega o registro da ser alterado
+                var registry = _contactService.Get(contact.id);
+
+                // se o registro não foi encontrado, então retorna status de não encontrado
+                if (registry == null) return NotFound($"Registro com id '{contact.id}' não encontrado");
+
+                // atualiza os campos do registro para alteração
+                registry.ContactUpdate(contact.nome, contact.canal, contact.valor, contact.obs);
+
+                // carrega o resultado da alteração dos dados do registro
+                var result = await _contactService.UpdateRegistryAsync(registry.id, registry);
+
+                // se o resultado foi bem sucedido
+                if (result)
+                    return NoContent(); // retorna resposta sem conteúdo
+                else
+                    return BadRequest("Não foi possível atualizar o registro"); // retorna resposta de que não foi possível atualizar
+            }
+            catch (ValidationException ex) // se ocorreu erro de validação dos campos
+            {
+                // retorna o resultado da execução do método
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex) // se aconteceu erro de execução
+            {
+                // retorna o resultado da execução do método
+                return BadRequest(ex.Message);
+            }
         }
 
         /// <summary>Apaga um objeto do tipo Contato</summary>
@@ -104,10 +155,31 @@ namespace Meta.Desafio.WebApi.Controllers
         /// <response code="204">Requisição sem conteúdo</response>
         /// <response code="401">Requisição requer autenticação</response>
         /// <response code="404">Requisição não encontrada</response>
-        [HttpDelete]
-        public void Delete(string idContato)
+        [HttpDelete("{idContato}")]
+        public async Task<IActionResult> Delete(string idContato)
         {
+            try
+            {
+                // carrega o registro da ser alterado
+                var registry = _contactService.Get(idContato);
 
+                // se o registro não foi encontrado, então retorna status de não encontrado
+                if (registry == null) return NotFound($"Registro com id '{idContato}' não encontrado");
+
+                // carrega o resultado da exclusão do registro
+                var result = await _contactService.DeleteRegistryAsync(idContato);
+
+                // se o resultado foi bem sucedido
+                if (result)
+                    return NoContent(); // retorna resposta sem conteúdo
+                else
+                    return BadRequest("Não foi possível excluir o registro"); // retorna resposta de que não foi possível excluir
+            }
+            catch (Exception ex) // se aconteceu erro de execução
+            {
+                // retorna o resultado da execução do método
+                return BadRequest(ex.Message);
+            }
         }
     }
 }
