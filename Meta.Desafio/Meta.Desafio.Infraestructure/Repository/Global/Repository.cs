@@ -56,7 +56,7 @@ namespace Meta.Desafio.Infraestructure.Repository.Global
         public bool UpdateRegistry(string id, TEntity registry)
         {
             // cria o filtro de pesquisa para o objeto
-            FilterDefinition<TEntity> filter = Builders<TEntity>.Filter.Eq("Id", ObjectId.Parse(id));
+            FilterDefinition<TEntity> filter = Builders<TEntity>.Filter.Eq("id", ObjectId.Parse(id));
 
             // carrega as opções de alteração
             var replaceOptions = new ReplaceOptions { IsUpsert = true };
@@ -74,7 +74,7 @@ namespace Meta.Desafio.Infraestructure.Repository.Global
         public bool DeleteRegistry(string id)
         {
             // cria o filtro de pesquisa para o objeto
-            FilterDefinition<TEntity> filter = Builders<TEntity>.Filter.Eq("Id", ObjectId.Parse(id));
+            FilterDefinition<TEntity> filter = Builders<TEntity>.Filter.Eq("id", ObjectId.Parse(id));
 
             // executa o processo de atualização do registro no banco de dados
             DeleteResult result = Context.Connection.GetCollection<TEntity>(CollectionName).DeleteOne(filter);
@@ -106,7 +106,7 @@ namespace Meta.Desafio.Infraestructure.Repository.Global
         public async Task<bool> UpdateRegistryAsync(string id, TEntity registry)
         {
             // cria o filtro de pesquisa para o objeto
-            FilterDefinition<TEntity> filter = Builders<TEntity>.Filter.Eq("Id", ObjectId.Parse(id));
+            FilterDefinition<TEntity> filter = Builders<TEntity>.Filter.Eq("id", ObjectId.Parse(id));
 
             // carrega as opções de alteração
             var replaceOptions = new ReplaceOptions { IsUpsert = true };
@@ -124,7 +124,7 @@ namespace Meta.Desafio.Infraestructure.Repository.Global
         public async Task<bool> DeleteRegistryAsync(string id)
         {
             // cria o filtro de pesquisa para o objeto
-            FilterDefinition<TEntity> filter = Builders<TEntity>.Filter.Eq("Id", ObjectId.Parse(id));
+            FilterDefinition<TEntity> filter = Builders<TEntity>.Filter.Eq("id", ObjectId.Parse(id));
 
             // executa o processo de atualização do registro no banco de dados
             DeleteResult result = await Context.Connection.GetCollection<TEntity>(CollectionName).DeleteOneAsync(filter);
@@ -143,7 +143,7 @@ namespace Meta.Desafio.Infraestructure.Repository.Global
         public TEntity Get(string id)
         {
             // cria o filtro de pesquisa para o objeto
-            FilterDefinition<TEntity> filter = Builders<TEntity>.Filter.Eq("Id", ObjectId.Parse(id));
+            FilterDefinition<TEntity> filter = Builders<TEntity>.Filter.Eq("id", ObjectId.Parse(id));
 
             // retorna o registro que corresponde ao identificador, caso contrário nulo
             return Context.Connection.GetCollection<TEntity>(CollectionName).Find(filter).FirstOrDefault();
@@ -181,7 +181,7 @@ namespace Meta.Desafio.Infraestructure.Repository.Global
         public async Task<TEntity> GetAsync(string id)
         {
             // cria o filtro de pesquisa para o objeto
-            FilterDefinition<TEntity> filter = Builders<TEntity>.Filter.Eq("Id", ObjectId.Parse(id));
+            FilterDefinition<TEntity> filter = Builders<TEntity>.Filter.Eq("id", ObjectId.Parse(id));
 
             // carrega o resultado da consulta
             var result = await Context.Connection.GetCollection<TEntity>(CollectionName).FindAsync(filter);

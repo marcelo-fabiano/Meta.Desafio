@@ -38,11 +38,11 @@ namespace Meta.Desafio.WebApi.Controllers
         [HttpGet("{idContato}")]
         public async Task<IActionResult> Get(string idContato)
         {
-            // carrega o resultado da busca pelo contato
-            var result = await _contactService.GetAsync(idContato);
+         // carrega o resultado da busca pelo contato
+         var result = await _contactService.GetAsync(idContato);
 
-            // se foi encontrado um resultado, então retorna o registro encontrado
-            if (result != null) return Ok(result);
+         // se foi encontrado um resultado, então retorna o registro encontrado
+         if (result != null) return Ok(result);
               
             // caso contrário retorna que o registro não pode ser encontrado
             return NotFound();
