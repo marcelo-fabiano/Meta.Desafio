@@ -32,7 +32,7 @@ namespace Meta.Desafio.WebApi
         public void ConfigureServices(IServiceCollection services)
         {
             // resolve as injeções de dependência da aplicação
-            ResolveInjecao(services);
+            ResolveInjection(services);
 
             // adiciona os controllers a coleção de serviços
             services.AddControllers();
@@ -85,7 +85,7 @@ namespace Meta.Desafio.WebApi
 
         /// <summary>Método que configura a injeção de dependências da aplicação</summary>
         /// <param name="services">Serviço que será configurado para o conteiner</param>
-        private void ResolveInjecao(IServiceCollection services)
+        private void ResolveInjection(IServiceCollection services)
         {
             // adiciona ao escopo da aplica~ção o contexto
             services.AddScoped<IContext, Context>();

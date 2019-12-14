@@ -1,0 +1,50 @@
+﻿@page
+@model Meta.Desafio.CRUD.Pages.Audience.IndexModel
+
+@{
+   ViewData["Title"] = "Audiências";
+   Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Audiências</h1>
+
+<p>
+   <a asp-page="Create">Cria nova</a>
+</p>
+<table class="table">
+   <thead>
+      <tr>
+         <th>
+            @Html.DisplayNameFor(model => model.Audience[0].Emissora_Nome)
+         </th>
+         <th>
+            @Html.DisplayNameFor(model => model.Audience[0].Data_Hora_Audiencia)
+         </th>
+         <th>
+            @Html.DisplayNameFor(model => model.Audience[0].Pontos_Audiencia)
+         </th>
+         <th></th>
+      </tr>
+   </thead>
+   <tbody>
+      @foreach (var item in Model.Audience)
+      {
+         <tr>
+            <td>
+               @Html.DisplayFor(modelItem => item.Emissora_Nome)
+            </td>
+            <td>
+               @Html.DisplayFor(modelItem => item.Data_Hora_Audiencia)
+            </td>
+            <td>
+               @Html.DisplayFor(modelItem => item.Pontos_Audiencia)
+            </td>
+            <td>
+               <a asp-page="./Edit" asp-route-id="@item.Id">Editar</a> |
+               <a asp-page="./Details" asp-route-id="@item.Id">Detalhe</a> |
+               <a asp-page="./Delete" asp-route-id="@item.Id">Excluir</a>
+            </td>
+         </tr>
+      }
+   </tbody>
+</table>

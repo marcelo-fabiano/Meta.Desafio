@@ -1,0 +1,47 @@
+﻿@page
+@model Meta.Desafio.CRUD.Pages.Audience.CreateModel
+
+@{
+   ViewData["Title"] = "Novo";
+   Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Novo</h1>
+
+<h4>Audiência</h4>
+<hr />
+<div class="row">
+   <div class="col-md-4">
+      <form method="post">
+         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+         <div class="form-group">
+            <label asp-for="Audience.Emissora_Audiencia" class="control-label"></label>
+            <select asp-for="Audience.Emissora_Audiencia" class="form-control" asp-items="@(new SelectList(Model.ListaEmissoras, "Id", "Nome"))">
+               <option value="">-- Selecione a Emissora --</option>
+            </select>
+            <span asp-validation-for="Audience.Emissora_Audiencia" class="text-danger"></span>
+         </div>
+         <div class="form-group">
+            <label asp-for="Audience.Data_Hora_Audiencia" class="control-label"></label>
+            <input asp-for="Audience.Data_Hora_Audiencia" class="form-control" />
+            <span asp-validation-for="Audience.Data_Hora_Audiencia" class="text-danger"></span>
+         </div>
+         <div class="form-group">
+            <label asp-for="Audience.Pontos_Audiencia" class="control-label"></label>
+            <input asp-for="Audience.Pontos_Audiencia" class="form-control" />
+            <span asp-validation-for="Audience.Pontos_Audiencia" class="text-danger"></span>
+         </div>
+         <div class="form-group">
+            <input type="submit" value="Criar" class="btn btn-primary" />
+         </div>
+      </form>
+   </div>
+</div>
+
+<div>
+   <a asp-page="Index">Volta para lista</a>
+</div>
+
+@section Scripts {
+   @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,26 @@
+﻿@page
+@model Meta.Desafio.CRUD.Pages.Station.DetailsModel
+
+@{
+    ViewData["Title"] = "Detalhes";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Detalhes</h1>
+
+<div>
+    <h4>Emissora</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Station.Nome)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Station.Nome)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-page="./Edit" asp-route-id="@Model.Station.Id">Editar</a> |
+    <a asp-page="./Index">Volta para lista</a>
+</div>
